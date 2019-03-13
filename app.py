@@ -20,15 +20,18 @@ class City(db.Model):
 @app.route('/' , methods=['GET', 'POST'])
 @app.route('//')
 def index():
+
     if request.method == 'POST':
         new_city = request.form.get('city')
-
-
+        new_city = new_city.upper()
         if new_city:
-
             q = db.session.query(City).filter_by(name=new_city).all()
-
+            url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=271d1234d3f497eed5b1d80a07b3fcd1'
+            response = requests.get(url.format(new_city))
+            if response.status_code == 404:
+                abort(404)
             if not q:
+                new_city =new_city.upper()
                 new_city_obj = City(name=new_city)
                 db.session.add(new_city_obj)
                 db.session.commit()
@@ -53,14 +56,15 @@ def index():
         else:
 
             r = response.json()
-
+            print(r)
 
             weather = {
                 'city' : city.name,
                 'temperature': r['main']['temp'],
                 'description': r['weather'][0]['description'],
                 'icon': r['weather'][0]['icon'],
-
+                'lon':r['coord']['lon'],
+                'lat':r['coord']['lat'],
             }
 
             weather_data.append(weather)
@@ -68,12 +72,6 @@ def index():
 
     return render_template('weather.html', weather_data=weather_data)
 
-'''
-
-Error : unable to get back to the home page. 
-Hence disabled this. 
-
-'''
 
 @app.errorhandler(404)
 # inbuilt function which takes error as parameter
