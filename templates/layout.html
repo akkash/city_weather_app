@@ -1,0 +1,26 @@
+{% include "header.html" %}
+
+
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+
+
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-offset-4 is-4">
+                    <h3><i>{{ message }}</i></h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% block body %} {% endblock %}
+
